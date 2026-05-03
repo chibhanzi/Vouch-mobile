@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { ThemeToggleButton } from "@/components/ThemeToggleButton";
 import { VouchLogo } from "@/components/VouchLogo";
 import { useAuth } from "@/context/AuthContext";
 import { useColors } from "@/hooks/useColors";
@@ -396,9 +397,12 @@ export default function ScannerScreen() {
     <View style={s.root}>
       <View style={s.header}>
         <VouchLogo size="sm" />
-        <View style={s.statusBadge}>
-          <View style={s.statusDot} />
-          <Text style={s.statusText}>Online</Text>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <View style={s.statusBadge}>
+            <View style={s.statusDot} />
+            <Text style={s.statusText}>Online</Text>
+          </View>
+          <ThemeToggleButton />
         </View>
       </View>
 

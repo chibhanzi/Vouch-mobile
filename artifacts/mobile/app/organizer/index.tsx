@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { ThemeToggleButton } from "@/components/ThemeToggleButton";
 import { VouchLogo } from "@/components/VouchLogo";
 import { useAuth } from "@/context/AuthContext";
 import { useColors } from "@/hooks/useColors";
@@ -296,9 +297,7 @@ export default function OrganizerDashboard() {
             <View style={s.onlineDot} />
             <Text style={s.onlineText}>Online</Text>
           </View>
-          <Pressable style={s.iconBtn}>
-            <Ionicons name="sunny-outline" size={18} color={colors.mutedForeground} />
-          </Pressable>
+          <ThemeToggleButton style={s.iconBtn} />
           <Pressable style={s.iconBtn} onPress={handleLogout}>
             <Ionicons name="log-out-outline" size={18} color={colors.mutedForeground} />
           </Pressable>
