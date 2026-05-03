@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -18,6 +19,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { VouchLogo } from "@/components/VouchLogo";
 import { useAuth, UserRole } from "@/context/AuthContext";
 import { useColors } from "@/hooks/useColors";
+
+const logoImage = require("@/assets/images/vouch-logo.png");
 
 export default function LoginScreen() {
   const colors = useColors();
@@ -71,6 +74,8 @@ export default function LoginScreen() {
     }
   };
 
+  const isOrganizer = role === "organizer";
+
   const s = StyleSheet.create({
     root: {
       flex: 1,
@@ -89,7 +94,7 @@ export default function LoginScreen() {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      marginBottom: 32,
+      marginBottom: 28,
     },
     themeBtn: {
       width: 36,
@@ -98,26 +103,29 @@ export default function LoginScreen() {
       backgroundColor: colors.card,
       alignItems: "center",
       justifyContent: "center",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.06,
+      shadowRadius: 4,
+      elevation: 2,
     },
     card: {
       backgroundColor: colors.card,
-      borderRadius: 20,
+      borderRadius: 22,
       padding: 24,
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.06,
-      shadowRadius: 12,
-      elevation: 3,
+      shadowOpacity: 0.07,
+      shadowRadius: 14,
+      elevation: 4,
     },
-    appIcon: {
-      width: 64,
-      height: 64,
-      borderRadius: 16,
-      backgroundColor: colors.primary,
+    appLogoWrap: {
       alignItems: "center",
-      justifyContent: "center",
-      alignSelf: "center",
-      marginBottom: 16,
+      marginBottom: 18,
+    },
+    appLogo: {
+      width: 180,
+      height: 56,
     },
     title: {
       fontSize: 22,
@@ -136,7 +144,7 @@ export default function LoginScreen() {
     tabs: {
       flexDirection: "row",
       backgroundColor: colors.muted,
-      borderRadius: 10,
+      borderRadius: 12,
       padding: 3,
       marginBottom: 20,
     },
@@ -146,8 +154,8 @@ export default function LoginScreen() {
       alignItems: "center",
       justifyContent: "center",
       gap: 6,
-      paddingVertical: 8,
-      borderRadius: 8,
+      paddingVertical: 9,
+      borderRadius: 10,
     },
     tabActive: {
       backgroundColor: colors.card,
@@ -196,7 +204,7 @@ export default function LoginScreen() {
       flexDirection: "row",
       alignItems: "center",
       backgroundColor: colors.input,
-      borderRadius: 10,
+      borderRadius: 11,
       borderWidth: 1,
       borderColor: colors.border,
       marginBottom: 14,
@@ -217,7 +225,7 @@ export default function LoginScreen() {
       alignItems: "center",
       gap: 6,
       backgroundColor: "#FEF2F2",
-      borderRadius: 8,
+      borderRadius: 10,
       padding: 10,
       marginBottom: 14,
     },
@@ -225,10 +233,11 @@ export default function LoginScreen() {
       fontSize: 13,
       fontFamily: "Inter_400Regular",
       color: colors.destructive,
+      flex: 1,
     },
     btn: {
       backgroundColor: colors.primary,
-      borderRadius: 12,
+      borderRadius: 13,
       paddingVertical: 15,
       alignItems: "center",
       marginTop: 4,
@@ -241,7 +250,7 @@ export default function LoginScreen() {
     btnText: {
       fontSize: 15,
       fontFamily: "Inter_600SemiBold",
-      color: colors.primaryForeground,
+      color: "#fff",
     },
     btnTextValidator: {
       color: colors.foreground,
@@ -255,17 +264,25 @@ export default function LoginScreen() {
     },
     joinCard: {
       backgroundColor: colors.card,
-      borderRadius: 16,
+      borderRadius: 18,
       padding: 18,
       flexDirection: "row",
       alignItems: "center",
       gap: 12,
-      marginTop: 16,
+      marginTop: 14,
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.04,
+      shadowOpacity: 0.05,
       shadowRadius: 8,
-      elevation: 1,
+      elevation: 2,
+    },
+    joinIconWrap: {
+      width: 42,
+      height: 42,
+      borderRadius: 21,
+      backgroundColor: colors.accent,
+      alignItems: "center",
+      justifyContent: "center",
     },
     joinText: {
       fontSize: 14,
@@ -279,8 +296,6 @@ export default function LoginScreen() {
       marginTop: 2,
     },
   });
-
-  const isOrganizer = role === "organizer";
 
   return (
     <KeyboardAvoidingView
@@ -301,8 +316,8 @@ export default function LoginScreen() {
           </View>
 
           <View style={s.card}>
-            <View style={s.appIcon}>
-              <Ionicons name="qr-code" size={32} color="#fff" />
+            <View style={s.appLogoWrap}>
+              <Image source={logoImage} style={s.appLogo} resizeMode="contain" />
             </View>
 
             <Text style={s.title}>Sign In to Vouch</Text>
@@ -346,7 +361,7 @@ export default function LoginScreen() {
               >
                 <Ionicons name="shield-outline" size={18} color={colors.secondary} />
                 <View style={s.roleInfoText}>
-                  <Text style={[s.roleInfoTitle, { color: colors.secondary }]}>
+                  <Text style={[s.roleInfoTitle, { color: colors.primary }]}>
                     Event Organizer
                   </Text>
                   <Text style={[s.roleInfoDesc, { color: "#1D4ED8" }]}>
@@ -466,16 +481,7 @@ export default function LoginScreen() {
             style={({ pressed }) => [s.joinCard, pressed && { opacity: 0.8 }]}
             onPress={() => handleRoleSwitch("validator")}
           >
-            <View
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                backgroundColor: colors.accent,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
+            <View style={s.joinIconWrap}>
               <Ionicons name="people-outline" size={20} color={colors.primary} />
             </View>
             <View style={{ flex: 1 }}>

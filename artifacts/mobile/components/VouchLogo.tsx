@@ -1,8 +1,9 @@
-import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 
 import { useColors } from "@/hooks/useColors";
+
+const logoImage = require("@/assets/images/vouch-logo.png");
 
 interface VouchLogoProps {
   size?: "sm" | "md" | "lg";
@@ -12,54 +13,29 @@ interface VouchLogoProps {
 export function VouchLogo({ size = "md", light = false }: VouchLogoProps) {
   const colors = useColors();
 
-  const iconSizes = { sm: 20, md: 28, lg: 40 };
-  const textSizes = { sm: 16, md: 22, lg: 32 };
-  const boxSizes = { sm: 32, md: 44, lg: 64 };
-  const iconSize = iconSizes[size];
-  const textSize = textSizes[size];
-  const boxSize = boxSizes[size];
+  const heights = { sm: 28, md: 38, lg: 56 };
+  const widths = { sm: 96, md: 130, lg: 192 };
 
-  const logoColor = light ? "#FFFFFF" : colors.primary;
-  const textColor = light ? "#FFFFFF" : colors.primary;
+  const h = heights[size];
+  const w = widths[size];
+
+  if (light) {
+    return (
+      <Image
+        source={logoImage}
+        style={{ width: w, height: h, tintColor: undefined }}
+        resizeMode="contain"
+      />
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <View
-        style={[
-          styles.iconBox,
-          {
-            width: boxSize,
-            height: boxSize,
-            borderRadius: boxSize * 0.22,
-            backgroundColor: logoColor,
-          },
-        ]}
-      >
-        <Ionicons name="checkmark-sharp" size={iconSize} color="#FFFFFF" />
-      </View>
-      <Text
-        style={[
-          styles.text,
-          { fontSize: textSize, color: textColor, marginLeft: boxSize * 0.2 },
-        ]}
-      >
-        Vouch
-      </Text>
-    </View>
+    <Image
+      source={logoImage}
+      style={{ width: w, height: h }}
+      resizeMode="contain"
+    />
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  iconBox: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  text: {
-    fontFamily: "Inter_700Bold",
-    letterSpacing: -0.5,
-  },
-});
+const styles = StyleSheet.create({});
