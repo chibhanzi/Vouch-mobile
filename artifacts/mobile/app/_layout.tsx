@@ -15,8 +15,10 @@ import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { NotificationToastContainer } from "@/components/NotificationToast";
 import { SplashAnimation } from "@/components/SplashAnimation";
 import { AuthProvider } from "@/context/AuthContext";
+import { NotificationProvider } from "@/context/NotificationContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { useColors } from "@/hooks/useColors";
 
@@ -42,6 +44,7 @@ function AppContent() {
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <RootLayoutNav />
+      <NotificationToastContainer />
       {showSplash && (
         <SplashAnimation onFinish={() => setShowSplash(false)} />
       )}
@@ -71,11 +74,13 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>
             <AuthProvider>
-              <GestureHandlerRootView style={{ flex: 1 }}>
-                <KeyboardProvider>
-                  <AppContent />
-                </KeyboardProvider>
-              </GestureHandlerRootView>
+              <NotificationProvider>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                  <KeyboardProvider>
+                    <AppContent />
+                  </KeyboardProvider>
+                </GestureHandlerRootView>
+              </NotificationProvider>
             </AuthProvider>
           </ThemeProvider>
         </QueryClientProvider>

@@ -48,10 +48,10 @@ const usedTickets = new Set<string>(["TKT-1003"]);
 
 const SWIPE_THRESHOLD = 80;
 
-export default function ScannerScreen() {
+export default function OrganizerScanScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { user, addScan } = useAuth();
+  const { addScan } = useAuth();
   const { notify } = useNotifications();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanning, setScanning] = useState(false);
@@ -123,11 +123,7 @@ export default function ScannerScreen() {
         holderName: "Unknown",
         eventName: "TechConf 2026",
       };
-      notify(
-        "fraud",
-        "Fraudulent Ticket Detected",
-        `${code} · ${user?.validatorCode ?? "Gate A"}`
-      );
+      notify("fraud", "Invalid Ticket Detected", `${code} · Organizer Gate`);
     } else if (usedTickets.has(code.toUpperCase())) {
       scanResult = {
         status: "already_used",
@@ -138,7 +134,7 @@ export default function ScannerScreen() {
       notify(
         "already_used",
         "Ticket Already Used",
-        `${code} · ${ticket.holderName} · ${user?.validatorCode ?? "Gate A"}`
+        `${code} · ${ticket.holderName} · Organizer Gate`
       );
     } else {
       usedTickets.add(code.toUpperCase());
@@ -155,7 +151,7 @@ export default function ScannerScreen() {
       holderName: scanResult.holderName,
       eventName: scanResult.eventName,
       status: scanResult.status,
-      gate: user?.validatorCode ?? "Gate A",
+      gate: "Organizer",
     });
 
     if (scanResult.status === "valid") {
@@ -188,7 +184,7 @@ export default function ScannerScreen() {
       icon: "checkmark-circle" as const,
       iconColor: "#22C55E",
       title: "Valid Ticket",
-      hint: "↑ Swipe up to approve · ↓ Swipe down to reject",
+      hint: "Swipe up · Approve",
     },
     invalid: {
       bg: "#FEF2F2",
@@ -196,7 +192,7 @@ export default function ScannerScreen() {
       icon: "close-circle" as const,
       iconColor: "#EF4444",
       title: "Invalid Ticket",
-      hint: "↑ Approve · ↓ Reject",
+      hint: "Swipe down · Reject",
     },
     already_used: {
       bg: "#FFFBEB",
@@ -204,7 +200,7 @@ export default function ScannerScreen() {
       icon: "warning" as const,
       iconColor: "#F59E0B",
       title: "Already Used",
-      hint: "↑ Override · ↓ Deny",
+      hint: "Swipe to dismiss",
     },
   };
 
@@ -219,7 +215,7 @@ export default function ScannerScreen() {
         center={
           <View style={s.onlineBadge}>
             <View style={s.onlineDot} />
-            <Text style={s.onlineText}>Online</Text>
+            <Text style={s.onlineText}>Organizer</Text>
           </View>
         }
       />
@@ -229,7 +225,7 @@ export default function ScannerScreen() {
           <View style={s.scanCardTitle}>
             <Ionicons name="scan-outline" size={18} color={colors.primary} />
             <Text style={[s.scanCardTitleText, { color: colors.foreground }]}>
-              Ticket Scanner
+              Quick Validate
             </Text>
           </View>
 
@@ -256,12 +252,7 @@ export default function ScannerScreen() {
                 <Text
                   style={[s.placeholderText, { color: colors.mutedForeground }]}
                 >
-                  Point camera at QR code
-                </Text>
-                <Text
-                  style={[s.placeholderSub, { color: colors.mutedForeground }]}
-                >
-                  or enter code manually
+                  Point camera at ticket QR
                 </Text>
               </View>
             )}
@@ -269,16 +260,12 @@ export default function ScannerScreen() {
               <View
                 style={[
                   s.processingOverlay,
-                  {
-                    backgroundColor: isDark
-                      ? "rgba(0,0,0,0.75)"
-                      : "rgba(255,255,255,0.85)",
-                  },
+                  { backgroundColor: isDark ? "rgba(0,0,0,0.75)" : "rgba(255,255,255,0.85)" },
                 ]}
               >
                 <ActivityIndicator size="large" color={colors.primary} />
                 <Text style={[s.processingText, { color: colors.primary }]}>
-                  Verifying ticket…
+                  Verifying…
                 </Text>
               </View>
             )}
@@ -309,7 +296,10 @@ export default function ScannerScreen() {
             <Pressable
               style={({ pressed }) => [
                 s.altBtn,
-                { backgroundColor: colors.card, borderColor: colors.border },
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                },
                 pressed && { opacity: 0.8 },
               ]}
               onPress={() => setShowManual(true)}
@@ -320,44 +310,6 @@ export default function ScannerScreen() {
               </Text>
             </Pressable>
           </View>
-
-          <View style={s.statusRow}>
-            <View style={s.statusItem}>
-              <Ionicons name="shield-checkmark-outline" size={13} color="#22C55E" />
-              <Text style={[s.statusItemText, { color: colors.mutedForeground }]}>
-                Verified
-              </Text>
-            </View>
-            <View style={s.statusItem}>
-              <Ionicons name="people-outline" size={13} color={colors.secondary} />
-              <Text style={[s.statusItemText, { color: colors.mutedForeground }]}>
-                {user?.validatorCode ?? "Gate A"}
-              </Text>
-            </View>
-            <View style={s.statusItem}>
-              <Ionicons name="notifications-outline" size={13} color={colors.warning} />
-              <Text style={[s.statusItemText, { color: colors.mutedForeground }]}>
-                Alerts On
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        <View
-          style={[
-            s.infoCard,
-            { backgroundColor: colors.card, borderColor: colors.border },
-          ]}
-        >
-          <Ionicons
-            name="information-circle-outline"
-            size={18}
-            color={colors.mutedForeground}
-          />
-          <Text style={[s.infoText, { color: colors.mutedForeground }]}>
-            {user?.name ?? "Validator"} · {user?.validatorCode ?? ""} · TechConf
-            2026
-          </Text>
         </View>
       </View>
 
@@ -376,22 +328,11 @@ export default function ScannerScreen() {
                   sheetStyle,
                 ]}
               >
-                <View style={s.swipeHandle} />
+                <View style={s.swipeIndicator} />
 
                 <Text style={[s.swipeHint, { color: colors.mutedForeground }]}>
                   {resultConfig[result.status].hint}
                 </Text>
-
-                <View style={s.approveRejectRow}>
-                  <View style={[s.swipeActionHint, { backgroundColor: "#22C55E20" }]}>
-                    <Ionicons name="checkmark" size={14} color="#22C55E" />
-                    <Text style={[s.swipeActionText, { color: "#22C55E" }]}>Approve</Text>
-                  </View>
-                  <View style={[s.swipeActionHint, { backgroundColor: "#EF444420" }]}>
-                    <Ionicons name="close" size={14} color="#EF4444" />
-                    <Text style={[s.swipeActionText, { color: "#EF4444" }]}>Reject</Text>
-                  </View>
-                </View>
 
                 <Ionicons
                   name={resultConfig[result.status].icon}
@@ -409,9 +350,9 @@ export default function ScannerScreen() {
                   style={[s.infoBox, { backgroundColor: colors.card + "88" }]}
                 >
                   {[
-                    ["Ticket Holder", result.holderName],
+                    ["Holder", result.holderName],
                     ["Event", result.eventName],
-                    ["Gate", user?.validatorCode ?? "Gate A"],
+                    ["Gate", "Organizer"],
                     [
                       "Status",
                       result.status === "valid"
@@ -423,10 +364,7 @@ export default function ScannerScreen() {
                   ].map(([label, value]) => (
                     <View key={label} style={s.infoRow}>
                       <Text
-                        style={[
-                          s.infoLabel,
-                          { color: colors.mutedForeground },
-                        ]}
+                        style={[s.infoLabel, { color: colors.mutedForeground }]}
                       >
                         {label}
                       </Text>
@@ -474,7 +412,10 @@ export default function ScannerScreen() {
               <View
                 style={[
                   s.inputWrap,
-                  { backgroundColor: colors.input, borderColor: colors.border },
+                  {
+                    backgroundColor: colors.input,
+                    borderColor: colors.border,
+                  },
                 ]}
               >
                 <TextInput
@@ -496,7 +437,7 @@ export default function ScannerScreen() {
                 ]}
                 onPress={handleManualSubmit}
               >
-                <Text style={s.manualBtnText}>Validate Ticket</Text>
+                <Text style={s.manualBtnText}>Validate</Text>
               </Pressable>
             </Pressable>
           </Pressable>
@@ -512,18 +453,18 @@ const s = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    backgroundColor: "#DCFCE7",
+    backgroundColor: "#DBEAFE",
     borderRadius: 20,
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
-  onlineDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: "#22C55E" },
+  onlineDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: "#1A56DB" },
   onlineText: {
     fontSize: 11,
     fontFamily: "Inter_600SemiBold",
-    color: "#15803D",
+    color: "#1A56DB",
   },
-  content: { flex: 1, padding: 16, gap: 12 },
+  content: { flex: 1, padding: 16 },
   scanCard: {
     borderRadius: 20,
     padding: 18,
@@ -539,9 +480,12 @@ const s = StyleSheet.create({
     gap: 8,
     marginBottom: 14,
   },
-  scanCardTitleText: { fontSize: 15, fontFamily: "Inter_600SemiBold" },
+  scanCardTitleText: {
+    fontSize: 15,
+    fontFamily: "Inter_600SemiBold",
+  },
   cameraWrap: {
-    height: 220,
+    height: 230,
     borderRadius: 14,
     overflow: "hidden",
     borderWidth: 1.5,
@@ -550,17 +494,22 @@ const s = StyleSheet.create({
     justifyContent: "center",
     marginBottom: 14,
   },
-  placeholder: { alignItems: "center", gap: 8 },
-  placeholderText: { fontSize: 14, fontFamily: "Inter_500Medium" },
-  placeholderSub: { fontSize: 12, fontFamily: "Inter_400Regular" },
+  placeholder: { alignItems: "center", gap: 10 },
+  placeholderText: {
+    fontSize: 14,
+    fontFamily: "Inter_500Medium",
+  },
   processingOverlay: {
     ...StyleSheet.absoluteFillObject,
     alignItems: "center",
     justifyContent: "center",
     gap: 10,
   },
-  processingText: { fontSize: 14, fontFamily: "Inter_500Medium" },
-  btnRow: { flexDirection: "row", gap: 10, marginBottom: 14 },
+  processingText: {
+    fontSize: 14,
+    fontFamily: "Inter_500Medium",
+  },
+  btnRow: { flexDirection: "row", gap: 10 },
   scanBtn: {
     flex: 1,
     flexDirection: "row",
@@ -570,7 +519,11 @@ const s = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 13,
   },
-  btnText: { fontSize: 14, fontFamily: "Inter_600SemiBold", color: "#fff" },
+  btnText: {
+    fontSize: 14,
+    fontFamily: "Inter_600SemiBold",
+    color: "#fff",
+  },
   altBtn: {
     flex: 1,
     flexDirection: "row",
@@ -581,22 +534,10 @@ const s = StyleSheet.create({
     borderWidth: 1.5,
     paddingVertical: 13,
   },
-  altBtnText: { fontSize: 14, fontFamily: "Inter_600SemiBold" },
-  statusRow: {
-    flexDirection: "row",
-    justifyContent: "space-around",
+  altBtnText: {
+    fontSize: 14,
+    fontFamily: "Inter_600SemiBold",
   },
-  statusItem: { flexDirection: "row", alignItems: "center", gap: 4 },
-  statusItemText: { fontSize: 11, fontFamily: "Inter_400Regular" },
-  infoCard: {
-    borderRadius: 14,
-    padding: 14,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    borderWidth: StyleSheet.hairlineWidth,
-  },
-  infoText: { flex: 1, fontSize: 12, fontFamily: "Inter_400Regular" },
   overlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.52)",
@@ -606,88 +547,93 @@ const s = StyleSheet.create({
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     padding: 24,
-    paddingBottom: 40,
     alignItems: "center",
+    paddingBottom: 40,
   },
-  swipeHandle: {
+  swipeIndicator: {
     width: 36,
     height: 4,
     borderRadius: 2,
     backgroundColor: "rgba(0,0,0,0.15)",
-    marginBottom: 8,
+    marginBottom: 10,
   },
   swipeHint: {
     fontSize: 11,
-    fontFamily: "Inter_400Regular",
-    marginBottom: 12,
-    letterSpacing: 0.2,
-  },
-  approveRejectRow: {
-    flexDirection: "row",
-    gap: 8,
+    fontFamily: "Inter_500Medium",
     marginBottom: 16,
-  },
-  swipeActionHint: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    borderRadius: 20,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-  },
-  swipeActionText: {
-    fontSize: 11,
-    fontFamily: "Inter_600SemiBold",
+    letterSpacing: 0.3,
   },
   resultTitle: {
     fontSize: 20,
     fontFamily: "Inter_700Bold",
-    marginTop: 10,
+    marginTop: 12,
     marginBottom: 4,
   },
   resultId: {
     fontSize: 13,
     fontFamily: "Inter_500Medium",
-    marginBottom: 16,
+    marginBottom: 18,
   },
   infoBox: {
     width: "100%",
     borderRadius: 14,
     padding: 14,
-    marginBottom: 18,
+    marginBottom: 20,
   },
   infoRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 5,
   },
-  infoLabel: { fontSize: 13, fontFamily: "Inter_400Regular" },
-  infoValue: { fontSize: 13, fontFamily: "Inter_600SemiBold" },
+  infoLabel: {
+    fontSize: 13,
+    fontFamily: "Inter_400Regular",
+  },
+  infoValue: {
+    fontSize: 13,
+    fontFamily: "Inter_600SemiBold",
+  },
   doneBtn: {
     width: "100%",
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: "center",
   },
-  doneBtnText: { fontSize: 15, fontFamily: "Inter_600SemiBold", color: "#fff" },
+  doneBtnText: {
+    fontSize: 15,
+    fontFamily: "Inter_600SemiBold",
+    color: "#fff",
+  },
   manualSheet: {
     width: "100%",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 24,
   },
-  manualTitle: { fontSize: 17, fontFamily: "Inter_700Bold", marginBottom: 14 },
+  manualTitle: {
+    fontSize: 17,
+    fontFamily: "Inter_700Bold",
+    marginBottom: 14,
+  },
   inputWrap: {
     borderRadius: 12,
     borderWidth: 1,
     paddingHorizontal: 14,
     marginBottom: 12,
   },
-  input: { height: 46, fontSize: 16, fontFamily: "Inter_500Medium" },
+  input: {
+    height: 46,
+    fontSize: 16,
+    fontFamily: "Inter_500Medium",
+  },
   manualBtn: {
     borderRadius: 12,
     paddingVertical: 13,
     alignItems: "center",
   },
-  manualBtnText: { fontSize: 15, fontFamily: "Inter_600SemiBold", color: "#fff" },
+  manualBtnText: {
+    fontSize: 15,
+    fontFamily: "Inter_600SemiBold",
+    color: "#fff",
+  },
 });
