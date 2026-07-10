@@ -205,7 +205,7 @@ export default function OrganizerScanScreen() {
   };
 
   const isDark = colors.card === "#1E293B";
-  const showCamera = scanning && permission?.granted && Platform.OS !== "web";
+  const showCamera = scanning && permission?.granted;
   const bottomPad = insets.bottom + (Platform.OS === "web" ? 100 : 110);
 
   return (
