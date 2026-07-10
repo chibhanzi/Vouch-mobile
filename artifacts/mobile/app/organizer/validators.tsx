@@ -12,6 +12,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { AppHeader } from "@/components/AppHeader";
+import { ThemeToggleButton } from "@/components/ThemeToggleButton";
 import { useAuth } from "@/context/AuthContext";
 import { useColors } from "@/hooks/useColors";
 
@@ -19,29 +21,28 @@ export default function ValidatorsScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { validators, toggleValidator } = useAuth();
-  const topPad = Platform.OS === "web" ? 67 : insets.top;
 
   const activeCount = validators.filter((v) => v.active).length;
   const totalScans = validators.reduce((a, v) => a + v.scansToday, 0);
 
   const s = StyleSheet.create({
     root: { flex: 1, backgroundColor: colors.background },
-    header: {
+    subHeader: {
       backgroundColor: colors.card,
-      paddingTop: topPad + 12,
-      paddingBottom: 16,
+      paddingTop: 14,
+      paddingBottom: 14,
       paddingHorizontal: 20,
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
     },
-    headerRow: {
+    titleRow: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      marginBottom: 14,
+      marginBottom: 12,
     },
-    headerTitle: {
-      fontSize: 20,
+    screenTitle: {
+      fontSize: 22,
       fontFamily: "Inter_700Bold",
       color: colors.foreground,
     },
@@ -160,9 +161,10 @@ export default function ValidatorsScreen() {
 
   return (
     <View style={s.root}>
-      <View style={s.header}>
-        <View style={s.headerRow}>
-          <Text style={s.headerTitle}>Team</Text>
+      <AppHeader right={<ThemeToggleButton />} />
+      <View style={s.subHeader}>
+        <View style={s.titleRow}>
+          <Text style={s.screenTitle}>Team</Text>
           <Pressable style={({ pressed }) => [s.addBtn, pressed && { opacity: 0.8 }]}>
             <Ionicons name="add" size={16} color="#fff" />
             <Text style={s.addBtnText}>Invite</Text>

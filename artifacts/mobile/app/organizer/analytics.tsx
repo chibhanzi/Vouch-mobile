@@ -10,6 +10,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { AppHeader } from "@/components/AppHeader";
+import { ThemeToggleButton } from "@/components/ThemeToggleButton";
 import { useAuth } from "@/context/AuthContext";
 import { useColors } from "@/hooks/useColors";
 
@@ -29,7 +31,6 @@ export default function AnalyticsScreen() {
   const insets = useSafeAreaInsets();
   const { events, validators, scanHistory } = useAuth();
   const [period, setPeriod] = useState<"today" | "week" | "month">("today");
-  const topPad = Platform.OS === "web" ? 67 : insets.top;
 
   const totalScans = scanHistory.length;
   const validScans = scanHistory.filter((s) => s.status === "valid").length;
@@ -41,22 +42,21 @@ export default function AnalyticsScreen() {
 
   const s = StyleSheet.create({
     root: { flex: 1, backgroundColor: colors.background },
-    header: {
+    subHeader: {
       backgroundColor: colors.card,
-      paddingTop: topPad + 12,
-      paddingBottom: 16,
+      paddingTop: 14,
+      paddingBottom: 14,
       paddingHorizontal: 20,
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
     },
-    headerRow: {
+    titleRow: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      marginBottom: 14,
     },
-    headerTitle: {
-      fontSize: 20,
+    screenTitle: {
+      fontSize: 22,
       fontFamily: "Inter_700Bold",
       color: colors.foreground,
     },
@@ -67,7 +67,7 @@ export default function AnalyticsScreen() {
       padding: 3,
     },
     periodBtn: {
-      flex: 1,
+      paddingHorizontal: 14,
       paddingVertical: 6,
       alignItems: "center",
       borderRadius: 8,
@@ -267,25 +267,32 @@ export default function AnalyticsScreen() {
 
   return (
     <View style={s.root}>
-      <View style={s.header}>
-        <View style={s.headerRow}>
-          <Text style={s.headerTitle}>Analytics</Text>
-          <Pressable>
-            <Ionicons name="download-outline" size={22} color={colors.mutedForeground} />
-          </Pressable>
-        </View>
-        <View style={s.periodRow}>
-          {(["today", "week", "month"] as const).map((p) => (
-            <Pressable
-              key={p}
-              style={[s.periodBtn, period === p && s.periodBtnActive]}
-              onPress={() => setPeriod(p)}
-            >
-              <Text style={[s.periodText, period === p && s.periodTextActive]}>
-                {p.charAt(0).toUpperCase() + p.slice(1)}
-              </Text>
+      <AppHeader
+        right={
+          <>
+            <Pressable hitSlop={8}>
+              <Ionicons name="download-outline" size={22} color={colors.mutedForeground} />
             </Pressable>
-          ))}
+            <ThemeToggleButton />
+          </>
+        }
+      />
+      <View style={s.subHeader}>
+        <View style={s.titleRow}>
+          <Text style={s.screenTitle}>Analytics</Text>
+          <View style={s.periodRow}>
+            {(["today", "week", "month"] as const).map((p) => (
+              <Pressable
+                key={p}
+                style={[s.periodBtn, period === p && s.periodBtnActive]}
+                onPress={() => setPeriod(p)}
+              >
+                <Text style={[s.periodText, period === p && s.periodTextActive]}>
+                  {p === "today" ? "Today" : p === "week" ? "Week" : "Month"}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
         </View>
       </View>
 

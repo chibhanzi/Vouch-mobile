@@ -10,6 +10,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { AppHeader } from "@/components/AppHeader";
+import { ThemeToggleButton } from "@/components/ThemeToggleButton";
 import { useAuth, Event } from "@/context/AuthContext";
 import { useColors } from "@/hooks/useColors";
 
@@ -18,8 +20,6 @@ export default function EventsScreen() {
   const insets = useSafeAreaInsets();
   const { events } = useAuth();
   const [filter, setFilter] = useState<"all" | "active" | "upcoming" | "completed">("all");
-
-  const topPad = Platform.OS === "web" ? 67 : insets.top;
 
   const filtered = filter === "all" ? events : events.filter((e) => e.status === filter);
 
@@ -31,19 +31,35 @@ export default function EventsScreen() {
 
   const s = StyleSheet.create({
     root: { flex: 1, backgroundColor: colors.background },
-    header: {
+    subHeader: {
       backgroundColor: colors.card,
-      paddingTop: topPad + 12,
-      paddingBottom: 16,
+      paddingTop: 14,
+      paddingBottom: 12,
       paddingHorizontal: 20,
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
     },
-    headerTitle: {
-      fontSize: 20,
+    titleRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      marginBottom: 12,
+    },
+    screenTitle: {
+      fontSize: 22,
       fontFamily: "Inter_700Bold",
       color: colors.foreground,
-      marginBottom: 14,
+    },
+    countBadge: {
+      backgroundColor: colors.primary + "1A",
+      borderRadius: 12,
+      paddingHorizontal: 10,
+      paddingVertical: 3,
+    },
+    countBadgeText: {
+      fontSize: 12,
+      fontFamily: "Inter_600SemiBold",
+      color: colors.primary,
     },
     filterRow: {
       flexDirection: "row",
@@ -232,8 +248,14 @@ export default function EventsScreen() {
 
   return (
     <View style={s.root}>
-      <View style={s.header}>
-        <Text style={s.headerTitle}>Events</Text>
+      <AppHeader right={<ThemeToggleButton />} />
+      <View style={s.subHeader}>
+        <View style={s.titleRow}>
+          <Text style={s.screenTitle}>Events</Text>
+          <View style={s.countBadge}>
+            <Text style={s.countBadgeText}>{filtered.length} event{filtered.length !== 1 ? "s" : ""}</Text>
+          </View>
+        </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={s.filterRow}>
             {(["all", "active", "upcoming", "completed"] as const).map((f) => (
@@ -243,7 +265,7 @@ export default function EventsScreen() {
                 onPress={() => setFilter(f)}
               >
                 <Text style={[s.chipText, filter === f && s.chipTextActive]}>
-                  {f.charAt(0).toUpperCase() + f.slice(1)}
+                  {f === "all" ? "All" : f === "active" ? "Live" : f === "upcoming" ? "Upcoming" : "Completed"}
                 </Text>
               </Pressable>
             ))}
