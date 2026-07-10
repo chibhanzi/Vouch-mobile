@@ -22,6 +22,8 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AppHeader } from "@/components/AppHeader";
+import { AlreadyUsedAnimation, InvalidAnimation, ValidAnimation } from "@/components/ResultAnimation";
+import { ScannerOverlay } from "@/components/ScannerOverlay";
 import { ThemeToggleButton } from "@/components/ThemeToggleButton";
 import { useAuth } from "@/context/AuthContext";
 import { useNotifications } from "@/context/NotificationContext";
@@ -240,12 +242,15 @@ export default function ScannerScreen() {
             ]}
           >
             {showCamera ? (
-              <CameraView
-                style={StyleSheet.absoluteFill}
-                facing="back"
-                barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
-                onBarcodeScanned={handleBarCodeScanned}
-              />
+              <>
+                <CameraView
+                  style={StyleSheet.absoluteFill}
+                  facing="back"
+                  barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
+                  onBarcodeScanned={handleBarCodeScanned}
+                />
+                <ScannerOverlay active={showCamera && !processing} />
+              </>
             ) : (
               <View style={s.placeholder}>
                 <Ionicons
@@ -393,11 +398,13 @@ export default function ScannerScreen() {
                   </View>
                 </View>
 
-                <Ionicons
-                  name={resultConfig[result.status].icon}
-                  size={60}
-                  color={resultConfig[result.status].iconColor}
-                />
+                {result.status === "valid" ? (
+                  <ValidAnimation />
+                ) : result.status === "invalid" ? (
+                  <InvalidAnimation />
+                ) : (
+                  <AlreadyUsedAnimation />
+                )}
                 <Text style={[s.resultTitle, { color: colors.foreground }]}>
                   {resultConfig[result.status].title}
                 </Text>
