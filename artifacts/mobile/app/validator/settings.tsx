@@ -13,6 +13,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { AppHeader } from "@/components/AppHeader";
+import { ThemeToggleButton } from "@/components/ThemeToggleButton";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useColors } from "@/hooks/useColors";
@@ -33,19 +35,6 @@ export default function ValidatorSettingsScreen() {
 
   const s = StyleSheet.create({
     root: { flex: 1, backgroundColor: colors.background },
-    header: {
-      backgroundColor: colors.card,
-      paddingTop: insets.top + 10,
-      paddingBottom: 12,
-      paddingHorizontal: 18,
-      borderBottomWidth: StyleSheet.hairlineWidth,
-      borderBottomColor: colors.border,
-    },
-    headerTitle: {
-      fontSize: 17,
-      fontFamily: "Inter_700Bold",
-      color: colors.foreground,
-    },
     content: {
       padding: 16,
       paddingBottom: insets.bottom + (Platform.OS === "web" ? 100 : 120),
@@ -170,9 +159,7 @@ export default function ValidatorSettingsScreen() {
 
   return (
     <View style={s.root}>
-      <View style={s.header}>
-        <Text style={s.headerTitle}>Settings</Text>
-      </View>
+      <AppHeader right={<ThemeToggleButton />} />
 
       <ScrollView
         contentContainerStyle={s.content}

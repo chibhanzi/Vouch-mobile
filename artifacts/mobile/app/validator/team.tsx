@@ -9,6 +9,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { AppHeader } from "@/components/AppHeader";
+import { ThemeToggleButton } from "@/components/ThemeToggleButton";
 import { useAuth } from "@/context/AuthContext";
 import { useColors } from "@/hooks/useColors";
 
@@ -16,8 +18,6 @@ export default function TeamScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { validators, user } = useAuth();
-  const topPad = Platform.OS === "web" ? 67 : insets.top;
-
   const active = validators.filter((v) => v.active);
   const totalScans = active.reduce((a, v) => a + v.scansToday, 0);
   const maxScans = Math.max(...validators.map((v) => v.scansToday), 1);
@@ -29,24 +29,43 @@ export default function TeamScreen() {
 
   const s = StyleSheet.create({
     root: { flex: 1, backgroundColor: colors.background },
-    header: {
+    subHeader: {
       backgroundColor: colors.card,
-      paddingTop: topPad + 12,
-      paddingBottom: 16,
+      paddingTop: 14,
+      paddingBottom: 14,
       paddingHorizontal: 20,
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
     },
-    headerTitle: {
-      fontSize: 20,
+    titleRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    screenTitle: {
+      fontSize: 22,
       fontFamily: "Inter_700Bold",
       color: colors.foreground,
-      marginBottom: 4,
     },
-    headerSub: {
-      fontSize: 13,
-      fontFamily: "Inter_400Regular",
-      color: colors.mutedForeground,
+    activeBadge: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      backgroundColor: "#DCFCE7",
+      borderRadius: 20,
+      paddingHorizontal: 12,
+      paddingVertical: 5,
+    },
+    activeDot: {
+      width: 7,
+      height: 7,
+      borderRadius: 4,
+      backgroundColor: "#22C55E",
+    },
+    activeBadgeText: {
+      fontSize: 12,
+      fontFamily: "Inter_600SemiBold",
+      color: "#15803D",
     },
     content: {
       padding: 16,
@@ -215,9 +234,15 @@ export default function TeamScreen() {
 
   return (
     <View style={s.root}>
-      <View style={s.header}>
-        <Text style={s.headerTitle}>Team</Text>
-        <Text style={s.headerSub}>{active.length} active validators</Text>
+      <AppHeader right={<ThemeToggleButton />} />
+      <View style={s.subHeader}>
+        <View style={s.titleRow}>
+          <Text style={s.screenTitle}>Team</Text>
+          <View style={s.activeBadge}>
+            <View style={s.activeDot} />
+            <Text style={s.activeBadgeText}>{active.length} active</Text>
+          </View>
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
