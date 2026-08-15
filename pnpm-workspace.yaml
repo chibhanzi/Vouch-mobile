@@ -33,6 +33,10 @@ minimumReleaseAgeExclude:
   # this setting guards against does not apply to our own packages.
   - '@replit/*'
   - stripe-replit-sync
+  # tar is a core npm package (npm's own team); temporarily excluded because
+  # the version required by the lockfile was published within the past 24h.
+  # Remove once tar@7.5.13 is >1 day old.
+  - tar
 
 packages:
   - artifacts/*
@@ -75,6 +79,9 @@ onlyBuiltDependencies:
   - unrs-resolver
 
 overrides:
+  # tar@7.5.13 and shell-quote@1.8.3 are blocked by the Replit package firewall.
+  tar: 7.5.22
+  shell-quote: 1.8.4
   # replit uses linux-x64 only, we can exclude all other platforms
   "esbuild>@esbuild/darwin-arm64": "-"
   "esbuild>@esbuild/darwin-x64": "-"

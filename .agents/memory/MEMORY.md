@@ -1,0 +1,1 @@
+- [Blocked pnpm packages](blocked-packages.md) — tar@7.5.13 and shell-quote@1.8.3 are firewall-blocked; overrides set in pnpm-workspace.yaml.
